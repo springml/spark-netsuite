@@ -23,20 +23,22 @@ class DefaultSource extends RelationProvider with SchemaRelationProvider with Cr
   override def createRelation(sqlContext: SQLContext,
                               parameters: Map[String, String],
                               schema: StructType): BaseRelation = {
-    val username = param(parameters, "username")
+    val username = param(parameters, "email")
     val password = param(parameters, "password")
-    val wwsEndpoint = param(parameters, "wwsEndpoint")
-    val objectTag = param(parameters, "objectTagPath")
-    val detailsTag = param(parameters, "detailsTagPath")
+    val account = param(parameters, "account")
+    val role = param(parameters, "role")
+    val applicationId = param(parameters, "applicationId")
     val request = param(parameters, "request")
+    val recordTagPath = param(parameters, "recordTagPath")
     val xpath = param(parameters, "xpathMap")
     val namespacePrefix = parameters.get("namespacePrefixMap")
+    val pageSize = parameters.get("pageSize")
 
-    //val wwsInput = new NetSuiteInput(username, password, wwsEndpoint, request)
-    //val xPathInput = new XPathInput(objectTag, detailsTag)
-    //CSVUtil.populateXPathInput(xpath, xPathInput)
-    //xPathInput.namespaceMap = CSVUtil.readCSV(namespacePrefix.get)
-    //logger.debug("Namespace Map" + xPathInput.namespaceMap)
+    val wwsInput = new NetSuiteInput(username, password, account, role, applicationId, request, getPageSize(pageSize))
+    val xPathInput = new XPathInput(recordTagPath)
+    CSVUtil.populateXPathInput(xpath, xPathInput)
+    xPathInput.namespaceMap = CSVUtil.readCSV(namespacePrefix.get)
+    logger.debug("Namespace Map" + xPathInput.namespaceMap)
 
     //val records = new NetSuiteReader(wwsInput, xPathInput) read()
     var records : List[mutable.Map[String, String]] = null
@@ -65,4 +67,12 @@ class DefaultSource extends RelationProvider with SchemaRelationProvider with Cr
     paramValue
   }
 
+  private def getPageSize(pageSizeOption : Option[String]) : Integer = {
+    var pageSize = 100
+    if (pageSizeOption != null && pageSizeOption.isDefined) {
+      pageSize = pageSizeOption.get.toInt
+    }
+
+    pageSize
+  }
 }
