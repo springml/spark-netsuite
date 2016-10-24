@@ -7,8 +7,6 @@ import org.apache.spark.sql.sources.{BaseRelation, CreatableRelationProvider, Re
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
 
-import scala.collection.mutable
-
 /**
   * Created by sam on 20/9/16.
   */
@@ -34,14 +32,13 @@ class DefaultSource extends RelationProvider with SchemaRelationProvider with Cr
     val namespacePrefix = parameters.get("namespacePrefixMap")
     val pageSize = parameters.get("pageSize")
 
-    val wwsInput = new NetSuiteInput(username, password, account, role, applicationId, request, getPageSize(pageSize))
+    val netSuiteInput = new NetSuiteInput(username, password, account, role, applicationId, request, getPageSize(pageSize))
     val xPathInput = new XPathInput(recordTagPath)
-    CSVUtil.populateXPathInput(xpath, xPathInput)
+    xPathInput.xpathMap = CSVUtil.readCSV(xpath)
     xPathInput.namespaceMap = CSVUtil.readCSV(namespacePrefix.get)
     logger.debug("Namespace Map" + xPathInput.namespaceMap)
 
-    //val records = new NetSuiteReader(wwsInput, xPathInput) read()
-    var records : List[mutable.Map[String, String]] = null
+    val records = new NetSuiteReader(netSuiteInput, xPathInput) read()
     var sparkSqlContext : SQLContext = null
     var userSchema : StructType = null
     new DatasetRelation(records, sqlContext, schema)
