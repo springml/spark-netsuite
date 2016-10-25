@@ -30,9 +30,9 @@ class DefaultSource extends RelationProvider with SchemaRelationProvider with Cr
     val recordTagPath = param(parameters, "recordTagPath")
     val xpath = param(parameters, "xpathMap")
     val namespacePrefix = parameters.get("namespacePrefixMap")
-    val pageSize = parameters.get("pageSize")
+    val pageSize = parameters.getOrElse("pageSize", "100")
 
-    val netSuiteInput = new NetSuiteInput(username, password, account, role, applicationId, request, getPageSize(pageSize))
+    val netSuiteInput = new NetSuiteInput(username, password, account, role, applicationId, request, pageSize.toInt)
     val xPathInput = new XPathInput(recordTagPath)
     xPathInput.xpathMap = CSVUtil.readCSV(xpath)
     xPathInput.namespaceMap = CSVUtil.readCSV(namespacePrefix.get)
@@ -64,12 +64,4 @@ class DefaultSource extends RelationProvider with SchemaRelationProvider with Cr
     paramValue
   }
 
-  private def getPageSize(pageSizeOption : Option[String]) : Integer = {
-    var pageSize = 100
-    if (pageSizeOption != null && pageSizeOption.isDefined) {
-      pageSize = pageSizeOption.get.toInt
-    }
-
-    pageSize
-  }
 }

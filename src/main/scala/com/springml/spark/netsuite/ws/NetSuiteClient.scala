@@ -16,28 +16,46 @@ class NetSuiteClient(
                      ) {
 
   @transient val logger = Logger.getLogger(classOf[NetSuiteClient])
+  private val namespaceMsg2016 = "urn:messages_2016_1.platform.webservices.netsuite.com"
+  private val prefixMsg2016 = "smlm"
+
+  private val searchIdElement = "searchId"
+  private val pageIndexElement = "pageIndex"
+  private val searchMoreWithIdElement = "searchMoreWithId"
 
   private val netSuiteEndpoint = "https://webservices.netsuite.com/services/NetSuitePort_2016_1"
 //  private val netSuiteEndpoint = "http://localhost:3031/netsuite/service"
   private val webServiceTemplate = createWebServiceTemplate
 
   def search() : String = {
-    execute(soapHeaderHandler("search"))
+    execute(soapHeaderHandler("search"), netSuiteInput.request)
   }
 
-  def searchMoreWithId() : String = {
-    execute(soapHeaderHandler("searchMoreWithId"))
+  def searchMoreWithId(searchId : String, pageIndex : Long) : String = {
+    execute(soapHeaderHandler("searchMoreWithId"), searchMoreWithIdRequest(searchId, pageIndex))
   }
 
-  private def execute(soapHeaderHandler: SoapHeaderHandler) : String = {
-    logger.info("Request : " + netSuiteInput.request)
-    val source = new StreamSource(new StringReader(netSuiteInput.request))
+  private def searchMoreWithIdRequest(searchId : String, pageIndex : Long) : String = {
+    val searchIdElem = NetSuiteElement(prefixMsg2016, searchIdElement,
+                                    namespaceMsg2016, null, searchId, null)
+    val pageIndexElem = NetSuiteElement(prefixMsg2016, pageIndexElement,
+                                      namespaceMsg2016, null, pageIndex.toString, null)
+
+    val searchMoreWithIdElem = NetSuiteElement(prefixMsg2016, searchMoreWithIdElement,
+                                      namespaceMsg2016, null, null, List(searchIdElem, pageIndexElem))
+
+    searchMoreWithIdElem.toString
+  }
+
+  private def execute(soapHeaderHandler: SoapHeaderHandler, request : String) : String = {
+    logger.debug("Request : " + request)
+    val source = new StreamSource(new StringReader(request))
     val writer = new StringWriter
     val streamResult = new StreamResult(writer)
     webServiceTemplate.sendSourceAndReceiveToResult(source, soapHeaderHandler, streamResult)
 
     val response = writer.toString
-    logger.info("Response : " + response)
+    logger.debug("Response : " + response)
 
     return response
   }

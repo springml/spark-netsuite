@@ -6,6 +6,7 @@ import com.springml.spark.netsuite.ws.NetSuiteClient
 import org.apache.log4j.Logger
 
 import scala.collection.mutable
+import scala.xml.XML
 
 /**
   * Created by sam on 20/10/16.
@@ -17,27 +18,69 @@ class NetSuiteReader(
 
   @transient val logger = Logger.getLogger(classOf[NetSuiteReader])
   val xPathHelper = new XPathHelper(xPathInput.namespaceMap, null)
+  var currentPage = 1l
+  var totalPages = 0l
 
   def read() : List[mutable.Map[String, String]] = {
     XercesWarningFilter.start()
     var records :List[mutable.Map[String, String]] = List.empty
 
-    var response : String = ""
-    do {
-      response = new NetSuiteClient(netSuiteInput) search()
-      logger.debug("Response from NetSuite " + response)
+    val nsClient = new NetSuiteClient(netSuiteInput)
+    val response = nsClient.search()
+    records ++= readRecords(response)
 
-      if (response != null && !response.isEmpty) {
-        val xmlRecords = xPathHelper.evaluate(xPathInput.recordTag, response)
-
-        if (!xmlRecords.isEmpty) {
-          records ++= read(xmlRecords)
-        }
-      }
+    val searchId = getSearchId(response)
+    while (moreToRead(response)) {
+      currentPage += 1
+      logger.info("Reading page " + currentPage)
+      val searchMoreResponse = nsClient.searchMoreWithId(searchId, currentPage)
+      records ++= readRecords(searchMoreResponse)
     }
-    while (false)
 
     records
+  }
+
+  private def readRecords(nsResponse : String) : List[scala.collection.mutable.Map[String, String]] = {
+    logger.debug("Response from NetSuite " + nsResponse)
+    var records :List[mutable.Map[String, String]] = List.empty
+
+    if (nsResponse != null && !nsResponse.isEmpty) {
+      val xmlRecords = xPathHelper.evaluate(xPathInput.recordTag, nsResponse)
+
+      if (!xmlRecords.isEmpty) {
+        records ++= read(xmlRecords)
+      }
+    }
+
+    records
+  }
+
+  private def getSearchId(nsResponse : String) : String = {
+    if (nsResponse == null || nsResponse.isEmpty) {
+      return ""
+    }
+
+    // Reading total pages and comparing it with currentPage
+    val responseXML = XML.loadString(nsResponse)
+    (responseXML \\ "searchResult" \ "searchId").text
+  }
+
+  private def moreToRead(nsResponse : String) : Boolean = {
+    if (nsResponse == null || nsResponse.isEmpty) {
+      return false
+    }
+
+    // To avoid unnecessary parsing
+    if (totalPages == 0l) {
+      // Reading total pages and comparing it with currentPage
+      val responseXML = XML.loadString(nsResponse)
+      totalPages = (responseXML \\ "searchResult" \ "totalPages").text.toLong
+      logger.info("Total pages : " + totalPages)
+    }
+
+    logger.debug("Total Pages : " + totalPages)
+    logger.debug("Current Page : " + currentPage)
+    totalPages > currentPage
   }
 
   private def read(xmlRecords : List[String]) : List[scala.collection.mutable.Map[String, String]] = {
