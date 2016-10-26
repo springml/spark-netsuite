@@ -1,0 +1,6 @@
+Id,string(/platformCore:record/@internalId)
+Entity,/platformCore:record/listRel:entityId/text()
+Email,/platformCore:record/listRel:email/text()
+Balance,/platformCore:record/listRel:balance/text()
+IsPerson,/platformCore:record/listRel:isPerson/text()
+Status, /platformCore:record/listRel:entityStatus[@internalId="13"]/platformCore:name/text()
