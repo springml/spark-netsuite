@@ -12,7 +12,7 @@ import org.apache.spark.sql.{Row, SQLContext}
 import scala.collection.mutable
 
 /**
-  * DatasetRelation for Workday
+  * DatasetRelation for NetSuite Connector
   */
 class DatasetRelation(
                        records : List[mutable.Map[String, String]],

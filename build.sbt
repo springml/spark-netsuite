@@ -42,9 +42,9 @@ spDependencies += "elsevierlabs-os/spark-xml-utils:1.3.0"
   // Maven Details
 publishMavenStyle := true
 spIncludeMaven := true
-spShortDescription := "Spark Workday Connector"
-spDescription := """Spark Workday Connector
-                   | - Creates dataframe using data fetched from Workday Web services """.stripMargin
+spShortDescription := "Spark NetSuite Connector"
+spDescription := """Spark NetSuite Connector
+                   | - Creates dataframe using data fetched from NetSuite Web services """.stripMargin
 
 // licenses += "Apache-2.0" -> url("http://opensource.org/licenses/Apache-2.0")
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")

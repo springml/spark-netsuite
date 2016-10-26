@@ -55,7 +55,7 @@ class DefaultSource extends RelationProvider with SchemaRelationProvider with Cr
   private def param(parameters: Map[String, String],
                     paramName: String) : String = {
     val paramValue = parameters.getOrElse(paramName,
-      sys.error(s"""'$paramName' must be specified for Spark Workday package"""))
+      sys.error(s"""'$paramName' must be specified for Spark NetSuite package"""))
 
     if ("password".equals(paramName)) {
       logger.debug("Param " + paramName + " value " + paramValue)
