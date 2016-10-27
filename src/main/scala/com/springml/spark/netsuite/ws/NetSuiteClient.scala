@@ -4,6 +4,7 @@ import java.io.{StringReader, StringWriter}
 import javax.xml.transform.stream.{StreamResult, StreamSource}
 
 import com.springml.spark.netsuite.model.NetSuiteInput
+import com.springml.spark.netsuite.xml.NetSuiteElement
 import org.apache.log4j.Logger
 import org.springframework.ws.client.core.WebServiceTemplate
 import org.springframework.ws.soap.axiom.AxiomSoapMessageFactory

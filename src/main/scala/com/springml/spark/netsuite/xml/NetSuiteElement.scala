@@ -1,4 +1,4 @@
-package com.springml.spark.netsuite.ws
+package com.springml.spark.netsuite.xml
 
 /**
   * Created by sam on 21/10/16.

@@ -3,6 +3,7 @@ package com.springml.spark.netsuite.ws
 import javax.xml.transform.TransformerFactory
 
 import com.springml.spark.netsuite.model.NetSuiteInput
+import com.springml.spark.netsuite.xml.{NetSuiteAttribute, NetSuiteElement}
 import org.apache.log4j.Logger
 import org.springframework.ws.WebServiceMessage
 import org.springframework.ws.client.core.WebServiceMessageCallback
