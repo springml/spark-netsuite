@@ -6,6 +6,7 @@ import com.springml.spark.netsuite.ws.NetSuiteClient
 import org.apache.log4j.Logger
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 import scala.xml.XML
 
 /**
@@ -40,7 +41,7 @@ class NetSuiteReader(
     records
   }
 
-  private def readRecords(nsResponse : String) : List[scala.collection.mutable.Map[String, String]] = {
+  def readRecords(nsResponse : String) : List[scala.collection.mutable.Map[String, String]] = {
     logger.debug("Response from NetSuite " + nsResponse)
     var records :List[mutable.Map[String, String]] = List.empty
 
@@ -55,7 +56,7 @@ class NetSuiteReader(
     records
   }
 
-  private def getSearchId(nsResponse : String) : String = {
+  def getSearchId(nsResponse : String) : String = {
     if (nsResponse == null || nsResponse.isEmpty) {
       return ""
     }
@@ -65,7 +66,7 @@ class NetSuiteReader(
     (responseXML \\ "searchResult" \ "searchId").text
   }
 
-  private def moreToRead(nsResponse : String) : Boolean = {
+  def moreToRead(nsResponse : String) : Boolean = {
     if (nsResponse == null || nsResponse.isEmpty) {
       return false
     }
@@ -84,7 +85,16 @@ class NetSuiteReader(
   }
 
   private def read(xmlRecords : List[String]) : List[scala.collection.mutable.Map[String, String]] = {
-    xmlRecords.map(row => read(row))
+    val recordLists = xmlRecords.map(row => read(row))
+    val records = new ListBuffer[mutable.Map[String, String]]()
+
+    for (record <- recordLists) {
+      if (!record.isEmpty) {
+        records += record
+      }
+    }
+
+    records.toList
   }
 
   private def read(row: String): scala.collection.mutable.Map[String, String] = {
@@ -93,7 +103,9 @@ class NetSuiteReader(
     for ((column, xpath) <- xPathInput.xpathMap) {
       val result = xPathHelper.evaluateToString(xpath, row)
       logger.debug("Xpath evaluation response for xpath " + xpath + " \n" + result)
-      record(column) = result
+      if (result != null && !result.isEmpty) {
+        record(column) = result
+      }
     }
 
     record
