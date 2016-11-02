@@ -75,7 +75,11 @@ class NetSuiteReader(
     if (totalPages == 0l) {
       // Reading total pages and comparing it with currentPage
       val responseXML = XML.loadString(nsResponse)
-      totalPages = (responseXML \\ "searchResult" \ "totalPages").text.toLong
+      val totalPagesStr = (responseXML \\ "searchResult" \ "totalPages").text
+      if (totalPagesStr != null && !totalPagesStr.isEmpty) {
+        totalPages = totalPagesStr.toLong
+      }
+
       logger.info("Total pages : " + totalPages)
     }
 
