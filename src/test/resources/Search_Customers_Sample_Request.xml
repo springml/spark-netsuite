@@ -1,0 +1,5 @@
+ <search xmlns="urn:messages_2016_1.platform.webservices.netsuite.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <searchRecord xmlns:ns7="urn:relationships_2016_1.lists.webservices.netsuite.com" xsi:type="ns7:CustomerSearch">
+       <ns7:basic xmlns:ns8="urn:common_2016_1.platform.webservices.netsuite.com" xsi:type="ns8:CustomerSearchBasic"></ns7:basic>
+    </searchRecord>
+ </search>
