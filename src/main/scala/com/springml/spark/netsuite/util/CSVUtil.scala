@@ -19,7 +19,7 @@ object CSVUtil {
         if (!line.startsWith("#")) {
           val cols = line.split(",").map(_.trim)
           if (cols.length != 2) {
-            throw new Exception("Invalid Row : " + line + "\n Please make sure rows are specified as 'Prefix','namespace' in " + csvLocation)
+            throw new Exception("Invalid Row : " + line + "\n Please make sure rows are specified as 'Key','Value' in " + csvLocation)
           }
 
           resultMap += cols(0) -> cols(1)
