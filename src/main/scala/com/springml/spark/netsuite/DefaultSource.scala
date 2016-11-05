@@ -30,17 +30,20 @@ class DefaultSource extends RelationProvider with SchemaRelationProvider with Cr
     val recordTagPath = param(parameters, "recordTagPath")
     val xpath = param(parameters, "xpathMap")
     val namespacePrefix = parameters.get("namespacePrefixMap")
-    val pageSize = parameters.getOrElse("pageSize", "100")
+    val pageSizeParam = parameters.getOrElse("pageSize", "100")
+    val pageSize = pageSizeParam.toInt
 
-    val netSuiteInput = new NetSuiteInput(username, password, account, role, applicationId, request, pageSize.toInt)
+    if (pageSize > 1000) {
+      sys.error("Invalid pageSize option. Maximum supported pageSize is 1000")
+    }
+
+    val netSuiteInput = new NetSuiteInput(username, password, account, role, applicationId, request, pageSize)
     val xPathInput = new XPathInput(recordTagPath)
     xPathInput.xpathMap = CSVUtil.readCSV(xpath)
     xPathInput.namespaceMap = CSVUtil.readCSV(namespacePrefix.get)
     logger.debug("Namespace Map" + xPathInput.namespaceMap)
 
     val records = new NetSuiteReader(netSuiteInput, xPathInput) read()
-    var sparkSqlContext : SQLContext = null
-    var userSchema : StructType = null
     new DatasetRelation(records, sqlContext, schema)
   }
 
