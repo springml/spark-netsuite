@@ -4,7 +4,10 @@ Spark Connector for NetSuite is a SOAP web service wrapper around the NetSuite w
 
 ## Requirements
 
-This library requires Spark 1.6+
+This library requires Spark 2.x+
+
+For Spark 1.x support, please check [spark1.x](https://github.com/springml/spark-netsuite/tree/spark1.x) branch.
+
 
 ## Linking
 You can link against this library in your program at the following ways:
@@ -13,21 +16,21 @@ You can link against this library in your program at the following ways:
 ```
 <dependency>
     <groupId>com.springml</groupId>
-    <artifactId>spark-netsuite_2.10</artifactId>
-    <version>1.0.0</version>
+    <artifactId>spark-netsuite_2.11</artifactId>
+    <version>1.1.0</version>
 </dependency>
 ```
 
 ### SBT Dependency
 ```
-libraryDependencies += "com.springml" % "spark-netsuite_2.10" % "1.0.0"
+libraryDependencies += "com.springml" % "spark-netsuite_2.11" % "1.1.0"
 ```
 
 ## Using with Spark shell
 This package can be added to Spark using the `--packages` command line option.  For example, to include it when starting the spark shell:
 
 ```
-$ bin/spark-shell --packages com.springml:spark-netsuite_2.10:1.0.0
+$ bin/spark-shell --packages com.springml:spark-netsuite_2.11:1.1.0
 ```
 
 ## Feature
@@ -47,12 +50,10 @@ $ bin/spark-shell --packages com.springml:spark-netsuite_2.10:1.0.0
 * `schema`: (Optional) Schema to be used for constructing dataframes. If not provided all fields will be of type String
 
 ### Scala API
-Spark 1.6+:
 ```scala
 import org.apache.spark.sql.SQLContext
 
 // Construct Dataframe from NetSuite records
-val sqlContext = new SQLContext(sc)
 // Search request to be executed against NetSuite Web Service
 // Here Customers are fetched
 val request = """
@@ -63,7 +64,7 @@ val request = """
 </search>"""
 
 // Below constructs dataframe by executing search and searchMoreWithId operations 
-val df = sqlContext.read.
+val df = spark.read.
     format("com.springml.spark.netsuite").
     option("email", "netsuite_email").
     option("password", "netsuite_password").
@@ -78,19 +79,17 @@ val df = sqlContext.read.
 
 
 ### R API
-Spark 1.6+:
 ```r
 # Search request to be executed against NetSuite Web Service
 # Here Customers are fetched
 netsuite_request <- "<search xmlns=\"urn:messages_2016_1.platform.webservices.netsuite.com\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><searchRecord xmlns:ns7=\"urn:relationships_2016_1.lists.webservices.netsuite.com\" xsi:type=\"ns7:CustomerSearch\"><ns7:basic xmlns:ns8=\"urn:common_2016_1.platform.webservices.netsuite.com\" xsi:type=\"ns8:CustomerSearchBasic\"></ns7:basic></searchRecord></search>"
 
 // Below constructs dataframe by executing search and searchMoreWithId operations 
-df <- read.df(sqlContext, 
-      source="com.springml.spark.netsuite", 
-      email="netsuite_email", 
-      password="netsuite_password", 
+df <- read.df(source="com.springml.spark.netsuite",
+      email="netsuite_email",
+      password="netsuite_password",
       account="netsuite_account",
-      applicationId="netsuite_application_id", 
+      applicationId="netsuite_application_id",
       role="netsuite_user_role",
       pageSize="page_size",
       request=netsuite_request,
@@ -102,4 +101,4 @@ df <- read.df(sqlContext,
 
 
 ## Building From Source
-This library is built with [SBT](http://www.scala-sbt.org/0.13/docs/Command-Line-Reference.html), which is automatically downloaded by the included shell script. To build a JAR file simply run `sbt/sbt package` from the project root. The build configuration includes support for both Scala 2.10 and 2.11.
+This library is built with [SBT](http://www.scala-sbt.org/0.13/docs/Command-Line-Reference.html), which is automatically downloaded by the included shell script. To build a JAR file simply run `sbt/sbt package` from the project root.

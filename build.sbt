@@ -1,10 +1,9 @@
 name := "spark-netsuite"
-version := "1.0.0"
+version := "1.1.0"
 organization := "com.springml"
 
-scalaVersion := "2.10.6"
+scalaVersion := "2.11.8"
 
-resolvers += "sonatype-snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
 resolvers += "bintray-spark-packages" at "https://dl.bintray.com/spark-packages/maven/"
 resolvers += Resolver.url("artifactory", url("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases"))(Resolver.ivyStylePatterns)
 resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
@@ -34,7 +33,7 @@ assemblyMergeStrategy in assembly := {
 // Spark Package Details (sbt-spark-package)
 spName := "springml/spark-netsuite"
 spAppendScalaVersion := true
-sparkVersion := "1.6.0"
+sparkVersion := "2.1.0"
 sparkComponents += "sql"
 
 spDependencies += "elsevierlabs-os/spark-xml-utils:1.3.0"
